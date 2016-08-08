@@ -11,9 +11,16 @@
   <Version>0.1</Version>
   <Author>Ian Davis</Author>
   <Email></Email>
+  <Eol index="-1"/>
   <Sources>
     <Source>game.py</Source>
     <Source>__init__.py</Source>
+    <Source>hangman_ai/game_exceptions.py</Source>
+    <Source>hangman_ai/__init__.py</Source>
+    <Source>hangman_ai/players/base.py</Source>
+    <Source>hangman_ai/players/basic.py</Source>
+    <Source>hangman_ai/players/__init__.py</Source>
+    <Source>hangman_ai/players/cheater.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
