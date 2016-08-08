@@ -90,3 +90,4 @@ ENV/
 
 # Log files
 .log
+hangman_log.txt
