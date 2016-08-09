@@ -141,7 +141,7 @@ def words_by_length(words_filepath):
 
     with open(words_filepath, 'r') as words_file:
         for line in words_file:
-            stripped_line = line.strip()
+            stripped_line = line.strip().replace("'", '')
             word_length = len(stripped_line)
 
             if not word_length in sorted_words:
@@ -153,8 +153,8 @@ def words_by_length(words_filepath):
 
 
 def main():
-    words = words_by_length('C:/Users/davisix/Downloads/words.txt')
-    player = CheatingPlayer('Ian', 'C:/Users/davisix/Downloads/words.txt')
+    words = words_by_length('./words.txt')
+    player = CheatingPlayer('Ian', './words.txt')
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
     simulation.print_statistics()
