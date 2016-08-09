@@ -93,4 +93,4 @@ ENV/
 hangman_log.txt
 
 # CSV Files
-.csv
+*.csv
