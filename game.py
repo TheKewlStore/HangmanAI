@@ -3,6 +3,7 @@ import re
 import sys
 
 from hangman_ai import game_exceptions
+from hangman_ai.words import words_by_length
 from hangman_ai.players.basic import BasicPlayer
 from hangman_ai.players.cheater import CheatingPlayer
 
@@ -18,7 +19,7 @@ stream_handler = logging.StreamHandler(sys.stdout)
 
 file_handler.setFormatter(file_formatter)
 
-logger.setLevel('DEBUG')
+logger.setLevel('INFO')
 logger.addHandler(file_handler)
 
 
@@ -104,6 +105,8 @@ class Simulation(object):
 
     def start(self):
         for iteration in xrange(1, self.iterations + 1):
+            failed_words = 0
+            
             for word_length, words in self.words.iteritems():
                 if word_length < 4:
                     continue
@@ -120,14 +123,18 @@ class Simulation(object):
                     game.current_word = current_word
                     win = game.start()
 
-                    logger.info(current_word + ' ' + str(win))
+                    logger.debug(current_word + ' ' + str(win))
 
                     if win:
                         self.win_statistics[word_length].append(current_word)
+                    else:
+                        failed_words += 1
 
                     self.total_games[word_length] += 1
 
                     self.player.reset()
+                    
+            logger.info('AI fails for {0} words'.format(failed_words))
 
     def print_statistics(self):
         for word_length, games_played in self.total_games.iteritems():
@@ -136,25 +143,17 @@ class Simulation(object):
             logger.info("Win percentage for word length {0}: {1}% ({2} / {3})".format(word_length, percentage_won, games_won, games_played))
 
 
-def words_by_length(words_filepath):
-    sorted_words = {}
-
-    with open(words_filepath, 'r') as words_file:
-        for line in words_file:
-            stripped_line = line.strip().replace("'", '')
-            word_length = len(stripped_line)
-
-            if not word_length in sorted_words:
-                sorted_words[word_length] = []
-
-            sorted_words[word_length].append(stripped_line)
-
-    return sorted_words
-
-
 def main():
-    words = words_by_length('./words.txt')
-    player = CheatingPlayer('Ian', './words.txt')
+    words = words_by_length()
+    
+    logger.info('Basic frequency based AI:')
+    player = BasicPlayer('Ian')
+    simulation = Simulation(player, words, iterations=1)
+    simulation.start()
+    simulation.print_statistics()
+    
+    logger.info('Regex based word-bank sniffer AI:')
+    player = CheatingPlayer('Ian')
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
     simulation.print_statistics()
