@@ -1,14 +1,13 @@
 import re
 
-from hangman_ai.words import words_by_length
 from base import PlayerInterface
 
 
 class CheatingPlayer(PlayerInterface):
-    def __init__(self, name):
+    def __init__(self, name, words):
         super(CheatingPlayer, self).__init__(name)
 
-        self.all_words = words_by_length()
+        self.all_words = words
 
     def get_letter_regex(self):
         letters_guessed = ''.join(self.incorrect_guesses) + ''.join(self.correct_guesses)

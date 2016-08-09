@@ -106,7 +106,7 @@ class Simulation(object):
     def start(self):
         for iteration in xrange(1, self.iterations + 1):
             failed_words = 0
-            
+
             for word_length, words in self.words.iteritems():
                 if word_length < 4:
                     continue
@@ -133,7 +133,7 @@ class Simulation(object):
                     self.total_games[word_length] += 1
 
                     self.player.reset()
-                    
+
             logger.info('AI fails for {0} words'.format(failed_words))
 
     def print_statistics(self):
@@ -144,16 +144,16 @@ class Simulation(object):
 
 
 def main():
-    words = words_by_length()
-    
+    words = words_by_length(words_filepath='./resources/words2.txt')
+
     logger.info('Basic frequency based AI:')
     player = BasicPlayer('Ian')
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
     simulation.print_statistics()
-    
+
     logger.info('Regex based word-bank sniffer AI:')
-    player = CheatingPlayer('Ian')
+    player = CheatingPlayer('Ian', words)
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
     simulation.print_statistics()
