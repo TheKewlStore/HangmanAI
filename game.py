@@ -1,3 +1,4 @@
+import csv
 import logging
 import re
 import sys
@@ -136,10 +137,22 @@ class Simulation(object):
 
             logger.info('AI fails for {0} words'.format(failed_words))
 
-    def print_statistics(self):
-        for word_length, games_played in self.total_games.iteritems():
+    def statistics(self):
+        for word_length, games_played in sorted(self.total_games.iteritems()):
             games_won = len(self.win_statistics[word_length])
             percentage_won = (float(games_won) / float(games_played)) * 100
+            yield {'word_length': word_length,
+                    'games_played': games_played,
+                    'games_won': games_won,
+                    'percentage_won': percentage_won,
+                    }
+
+    def print_statistics(self):
+        for statistic in self.statistics():
+            word_length = statistic['word_length']
+            percentage_won = statistic['percentage_won']
+            games_won = statistic['games_won']
+            games_played = statistic['games_played']
             logger.info("Win percentage for word length {0}: {1}% ({2} / {3})".format(word_length, percentage_won, games_won, games_played))
 
 
@@ -150,14 +163,29 @@ def main():
     player = BasicPlayer('Ian')
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
-    simulation.print_statistics()
+    basic_statistics = simulation.statistics()
 
     logger.info('Regex based word-bank sniffer AI:')
     player = CheatingPlayer('Ian', words)
     simulation = Simulation(player, words, iterations=1)
     simulation.start()
-    simulation.print_statistics()
+    cheating_statistics = simulation.statistics()
 
+    with open('./statistics.csv', 'w') as csv_file:
+        writer = csv.writer(csv_file)
+
+        writer.writerow(['', 'Basic', 'Cheating'])
+
+        for basic_statistic, cheating_statistic in zip(basic_statistics, cheating_statistics):
+            word_length = basic_statistic['word_length']
+
+            if not word_length == cheating_statistic['word_length']:
+                continue
+
+            basic_percentage = basic_statistic['percentage_won']
+            cheating_percentage = cheating_statistic['percentage_won']
+
+            writer.writerow([word_length, basic_percentage, cheating_percentage])
 
 if __name__ == "__main__":
     main()
